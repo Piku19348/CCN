@@ -1,3 +1,5 @@
+Simulate a three nodes point-to-point network with duplex links between them. Set
+the queue size vary the bandwidth and find the number of packets dropped
 #create simulator
 
 set ns [new Simulator]
@@ -75,3 +77,49 @@ $ns at 5.0 "finish"
 #run the simulation
 
 $ns run
+
+
+///
+Simulate a four-node point-to-point network, and connect the links as follows: n0-n2, n1-
+n2 and n2-n3. Apply TCP agent between n0-n3 and UDP n1-n3. Apply relevant
+applications over TCP and UDP agents changing the parameter and determine the
+number of packets sent by TCP/UDP.
+
+set ns [new Simulator]
+set ntrace [open P2.tr w]
+$ns trace-all $ntrace
+set namfile [open P1.nam w]
+$ns namtrace-all $namfile
+proc finish {} {
+global ns ntrace namfile 
+$ns flush-trace
+close $ntrace 
+close $namfile
+exec nam P2.nam &
+exec echo "The no. of TCP packets send are" &
+exec grep "^+" P2.tr | cut -d " " -f 5 | grep -c "tcp" &
+exec echo "The no. of UDP packets send are" &
+exec grep "^+" P2.tr | cut -d " " -f 5 | grep -c "cbr" &
+exit 0
+}
+
+set n0 [$ns node]
+set n1 [$ns node]
+set n2 [$ns node]
+set n3 [$ns node]
+$ns duplex-link $n0 $n2 2Mb 10ms DropTail
+$ns duplex-link $n1 $n2 2Mb 10ms DropTail
+$ns duplex-link $n2 $n3 0.75Mb 20ms DropTail
+
+set tcp0 [new Agent/TCP]
+$ns attach-agent $n0 $tcp0
+set sink0 [new Agent/TCPSink]
+$ns attach-agent $n3 $sink0
+$ns connect $tcp0 $sink0
+
+set ftp0 [new Application/FTP]
+$ftp0 set type_ FTP
+$ftp0 attach-agent $tcp0.3
+12
+
+
