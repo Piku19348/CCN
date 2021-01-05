@@ -141,3 +141,23 @@ $ns at 10.0 "ftp0 stop"
 $ns at 11.0 "finish"
 
 $ns run 
+
+///
+Simulate an Ethernet LAN using N nodes. Determine collision across different nodes
+
+set ns [new Simulator]
+set ntrace [open P3.tr w]
+$ns trace-all $ntrace
+set namfile [open P3.nam w]
+$ns namtrace-all $namfile
+proc finish{} {
+global ns ntrace namfile
+$ns flush-trace 
+close $ntrace
+close $namfile
+
+
+
+
+
+
