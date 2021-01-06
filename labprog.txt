@@ -202,9 +202,9 @@ $ns run
 To Simulate transmission of ping messages over a network topology using ns-2
 
 set ns [new Simulator]
-set ntrace [open P4.tr ] 
+set ntrace [open P4.tr w] 
 $ns trace-all $ntrace 
-set namefile [open P4.nam w] 
+set namfile [open P4.nam w] 
 $ns namtrace-all $namfile
 
 proc finish {} {
@@ -220,12 +220,12 @@ set n0 [$ns node]
 set n1 [$ns node] 
 set n2 [$ns node]
 
-$ns duplex-link $n0 $n1 1Mb 10ms Droptail 
-$ns duplex-link $n1 $n2 1Mb 10ms Droptail
+$ns duplex-link $n0 $n1 1Mb 10ms DropTail 
+$ns duplex-link $n1 $n2 1Mb 10ms DropTail
 
-Agent/Ping instproc recv (from rtt} {
-$self instvar node_ 
-puts "$from recieved ping answer from node [$node_id] with round trip time $rtt ms"
+Agent/Ping instproc recv {from rtt} {
+$self instvar node_
+puts "$from recieved ping answer from node [$node_ id] with round trip time $rtt ms"
 }
 
 set p0 [new Agent/Ping]
@@ -240,7 +240,6 @@ $ns at 1.2 "$p0 send"
 $ns at 1.7 "$p1 send"
 $ns at 1.8 "finish" 
 $ns run
-
 
 ///
 Implement the method of cyclic data transmission using UDP protocol
